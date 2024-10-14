@@ -203,6 +203,17 @@ async sub take_droplet_action ($self, $droplet_id, $action, $payload = {}) {
   return;
 }
 
+async sub destroy_snapshot ($self, $snapshot_id) {
+  my $delete_res = await $self->delete_url("/snapshots/$snapshot_id");
+  return;
+}
+
+# Works with id, or fingerprint
+async sub destroy_ssh_key ($self, $ssh_key_id) {
+  my $delete_res = await $self->delete_url("/account/keys/$ssh_key_id");
+  return;
+}
+
 async sub destroy_droplet ($self, $droplet_id) {
   my $delete_res = await $self->delete_url("/droplets/$droplet_id");
   return;
