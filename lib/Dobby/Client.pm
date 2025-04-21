@@ -43,6 +43,7 @@ sub http ($self) {
   return $self->{__dobby_http} //= do {
     my $http = Net::Async::HTTP->new(
       user_agent => 'Dobby/0',
+      family => 'inet',
     );
 
     $self->loop->add($http);
