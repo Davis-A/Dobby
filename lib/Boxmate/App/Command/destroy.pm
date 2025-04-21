@@ -1,6 +1,8 @@
 package Boxmate::App::Command::destroy;
 use Boxmate::App -command;
 
+# ABSTRACT: destroy a box
+
 use v5.36.0;
 use utf8;
 

@@ -1,6 +1,8 @@
 package Boxmate::App::Command::create;
 use Boxmate::App -command;
 
+# ABSTRACT: create a box
+
 use v5.36.0;
 use utf8;
 

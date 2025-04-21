@@ -1,6 +1,8 @@
 package Boxmate::App::Command;
 use parent 'App::Cmd::Command';
 
+# ABSTRACT: the base class for box commands
+
 use v5.36.0;
 
 sub boxman ($self) {

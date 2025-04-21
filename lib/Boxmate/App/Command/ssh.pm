@@ -1,6 +1,8 @@
 package Boxmate::App::Command::ssh;
 use Boxmate::App -command;
 
+# ABSTRACT: ssh to a box
+
 use v5.36.0;
 use utf8;
 

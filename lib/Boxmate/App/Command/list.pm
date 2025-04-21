@@ -1,6 +1,8 @@
 package Boxmate::App::Command::list;
 use Boxmate::App -command;
 
+# ABSTRACT: list your boxes
+
 use v5.36.0;
 use utf8;
 

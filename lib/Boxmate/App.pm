@@ -1,6 +1,8 @@
 package Boxmate::App;
 use App::Cmd::Setup -app => {};
 
+# ABSTRACT: the App::Cmd that powers Boxmate
+
 use v5.36.0;
 use utf8;
 
