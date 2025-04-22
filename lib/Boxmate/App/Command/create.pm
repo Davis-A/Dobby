@@ -38,6 +38,7 @@ sub opt_spec {
 my %INABOX_SPEC = (
   project_id => q{d733cd68-8069-4815-ad49-e557a870ac0a},
   extra_tags => [ 'fminabox' ],
+  run_custom_setup => 1,
 );
 
 sub execute ($self, $opt, $args) {
