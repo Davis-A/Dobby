@@ -90,6 +90,7 @@ sub execute ($self, $opt, $args) {
       '$' .  builtin::ceil($droplet->{size}{price_hourly} * $age_secs / 3600);
 
     my $icon = ($image->{slug} && $image->{slug} =~ /^debian/) ? "\N{CYCLONE}"
+             : (($image->{description}//'') =~ /^Debian/)      ? "\N{CYCLONE}" # Deb 11
              : ($image->{name} =~ /\Afminabox/               ) ? "\N{PACKAGE}"
              :                                                   "\N{BLACK QUESTION MARK ORNAMENT}";
 
