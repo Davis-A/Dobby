@@ -47,7 +47,7 @@ sub execute ($self, $opt, $args) {
 
   my $spec = Synergy::BoxManager::ProvisionRequest->new({
     version   => $opt->version // $config->version,
-    tag       => $opt->tag,
+    tag       => $opt->tag // $opt->version,
     size      => $opt->size // $config->size,
     username  => $config->username,
     region    => $opt->region // $config->region,
