@@ -289,6 +289,20 @@ async sub get_all_domain_records_for_domain ($self, $domain) {
   return $record_res->{domain_records}->@*;
 }
 
+async sub _execute_http_sequence ($self, $seq) {
+  my @futures;
+  for my $todo (@$seq) {
+    push @futures, (
+        $todo->[0] eq 'PUT'     ? $self->json_put($todo->@[ 1, 2 ])
+      : $todo->[0] eq 'POST'    ? $self->json_post($todo->@[ 1, 2 ])
+      : $todo->[0] eq 'DELETE'  ? $self->delete_url($todo->[1])
+      : Carp::confess("Unknown HTTP sequence method: $todo->[0]")
+    );
+  }
+
+  return await Future->wait_all(@futures);
+}
+
 async sub remove_domain_records_for_ip ($self, $domain, $ip) {
   my $path = '/domains/' . $domain . '/records';
 
@@ -299,27 +313,70 @@ async sub remove_domain_records_for_ip ($self, $domain, $ip) {
   return await Future->wait_all(@deletions);
 }
 
+async sub remove_domain_records_cname_targeting ($self, $domain, $target_name) {
+  my $path = '/domains/' . $domain . '/records';
+
+  my @records   = await $self->get_all_domain_records_for_domain($domain);
+  my @to_delete = grep {; $_->{type} eq 'CNAME' && $_->{data} eq $target_name }
+                  @records;
+  my @deletions = map {; $self->delete_url("$path/$_->{id}") } @to_delete;
+
+  return await Future->wait_all(@deletions);
+}
+
 async sub point_domain_record_at_ip ($self, $domain, $name, $ip) {
   my $path = '/domains/' . $domain . '/records';
 
   my @records = await $self->get_all_domain_records_for_domain($domain);
 
-  my (@existing) = grep {; $_->{name} eq $name && $_->{type} eq 'A' } @records;
-
-  if (@existing) {
-    my @to_update = map {; $self->json_put("$path/$_->{id}", { data => $ip }) }
-                    @existing;
-    await Future->wait_all(@to_update);
-    return;
+  my $saw_A_record;
+  my @to_update;
+  for my $existing (grep {; $_->{name} eq $name } @records) {
+    if ($existing->{type} eq 'A') {
+      $saw_A_record = 1;
+      push @to_update, [ PUT => "$path/$existing->{id}", { data => $ip } ];
+    } elsif ($existing->{type} eq 'CNAME') {
+      push @to_update, [ DELETE => "$path/$existing->{id}" ];
+    } else {
+      # Weird, right?
+    }
   }
 
-  await $self->json_post($path, {
-    type => 'A',
-    name => $name,
-    data => $ip,
-    ttl  => 30,
-  });
+  unless ($saw_A_record) {
+    push @to_update, [
+      POST => $path => { type => 'A', name => $name, data => $ip, ttl  => 30 }
+    ];
+  }
 
+  await $self->_execute_http_sequence(\@to_update);
+  return;
+}
+
+async sub point_domain_record_at_name ($self, $domain, $name, $target_name) {
+  my $path = '/domains/' . $domain . '/records';
+
+  my @records = await $self->get_all_domain_records_for_domain($domain);
+
+  my $saw_CNAME_record = 0;
+  my @to_update;
+  for my $existing (grep {; $_->{name} eq $name } @records) {
+    if ($existing->{type} eq 'A') {
+      push @to_update, [ DELETE => "$path/$existing->{id}" ];
+    } elsif ($existing->{type} eq 'CNAME') {
+      $saw_CNAME_record = 1;
+      push @to_update, [ PUT => "$path/$existing->{id}", { data => $target_name } ];
+    } else {
+      # Weird, right?
+    }
+  }
+
+  unless ($saw_CNAME_record) {
+    push @to_update, [
+      POST => $path, { type => 'CNAME', name => $name, data => $target_name, ttl => 30 },
+    ]
+  }
+
+  await $self->_execute_http_sequence(\@to_update);
   return;
 }
 
