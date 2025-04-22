@@ -8,7 +8,7 @@ use utf8;
 
 sub abstract { 'ssh to a box' }
 
-sub usage_desc ($self) {
+sub usage_desc {
   '%c %o BOXPREFIX',
 }
 
