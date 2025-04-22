@@ -1,10 +1,8 @@
-use v5.32.0;
-use warnings;
+use v5.36.0;
 
 package Dobby::Client;
 # ABSTRACT: a Net::Async-based API client for DigitalOcean
 
-use experimental 'signatures';
 use parent 'IO::Async::Notifier';
 
 use Carp ();
