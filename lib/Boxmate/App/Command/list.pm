@@ -10,15 +10,45 @@ sub abstract { "list your boxes" }
 
 sub opt_spec {
   return (
-    [ 'username|u=s', 'boxes for some other user' ],
+    [ 'username|u=s',  'boxes for some other user' ],
+    [ 'everything',    'get every single droplet' ],
+    [ 'name=s',        'only the named box' ],
+    [],
+    [ 'with-tag|T=s@', 'only boxes with this tag' ],
   );
+}
+
+sub validate_args ($self, $opt, $args) {
+  my @exclusives;
+  push @exclusives, grep {; $opt->$_ } qw(username everything name);
+
+  if (@exclusives > 1) {
+    die "These options are mutually exclusive: "
+      . (join q{, }, map {; "--$_" } @exclusives)
+      . "\n";
+  }
 }
 
 sub execute ($self, $opt, $args) {
   my $config = $self->app->config;
-  my $droplets = $self->boxman->get_droplets_for(
-    $opt->username // $config->username
-  )->get;
+
+  my $droplets;
+  if ($opt->everything) {
+    my @droplets = $self->boxman->dobby->get_all_droplets->get;
+    @droplets = grep {; $_->{name} eq $opt->name } @droplets if $opt->name;
+    $droplets = \@droplets;
+  } else {
+    $droplets = $self->boxman->get_droplets_for(
+      $opt->username // $config->username
+    )->get;
+  }
+
+  if ($opt->with_tag) {
+    my %want_tag = map {; $_ => 1 } $opt->with_tag->@*;
+
+    @$droplets = grep {; my @tags = ($_->{tags} // [])->@*;
+                         grep {; $want_tag{$_} } @tags } @$droplets;
+  }
 
   unless (@$droplets) {
     say "📦 No boxes.";
