@@ -15,7 +15,14 @@ sub opt_spec {
     [ 'version|v=s',  'image version to use' ],
     [ 'tag|t=s',      'box tag (in user-foo, the "foo")' ],
     [],
-    [ 'debian',       "don't make a Fastmail-in-a-box, just Debian" ],
+    [ 'type' => 'hidden' => {
+        default => 'inabox',
+        one_of  => [
+          [ 'inabox',       "create a Fastmail-in-a-box (default behavior)" ],
+          [ 'debian',       "don't make a Fastmail-in-a-box, just Debian" ],
+        ]
+      }
+    ],
     [],
     [ 'make-default|D', 'make this your default box in DNS' ],
   );
