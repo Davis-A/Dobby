@@ -43,14 +43,19 @@ sub boxman ($self) {
 
   my $config = $self->config;
   $self->{_boxman} = Synergy::BoxManager->new({
+    dobby       => $dobby,
+    box_domain  => $config->box_domain,
+
     error_cb    => sub ($err) { die "❌ $err" },
     log_cb      => sub ($log) { say "🔸 " . String::Flogger->flog($log) },
     message_cb  => sub ($msg) { say "🔹 $msg" },
-    snippet_cb  => sub ($arg) { return undef },
-
-    dobby       => $dobby,
-
-    box_domain  => $config->box_domain,
+    snippet_cb  => sub ($arg) {
+      my $output = $arg->{content};
+      say "━━━┫ begin setup output ┣━━━━━━━━━";
+      say $output;
+      say "━━━┫ end setup output ┣━━━━━━━━━━━";
+      return undef;
+    },
   });
 }
 
