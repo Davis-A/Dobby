@@ -13,7 +13,7 @@ sub opt_spec {
     [ 'region=s',     'what region to create the box in' ],
     [ 'size|s=s',     'DigitalOcean slug for the Droplet size' ],
     [ 'version|v=s',  'image version to use' ],
-    [ 'ident|i=s',    'box ident (in user-foo, the "foo")' ],
+    [ 'ident|i=s',    'box ident (the part before username)', { required => 1 } ],
     [],
     [ 'type' => 'hidden' => {
         default => 'inabox',
@@ -57,7 +57,7 @@ sub execute ($self, $opt, $args) {
 
   my $spec = Synergy::BoxManager::ProvisionRequest->new({
     version   => $opt->version // $config->version,
-    ident     => $opt->ident // $opt->version // $config->version,
+    ident     => $opt->ident,
     size      => $opt->size // $config->size,
     username  => $config->username,
     region    => $opt->region // $config->region,
