@@ -7,7 +7,7 @@ use Defined::KV qw(defined_kv);
 use Path::Tiny ();
 
 # BoxManager config:
-has box_domain => (is => 'ro', isa => 'Str', default => 'fastmaildev.com');
+has box_domain => (is => 'ro', isa => 'Str', default => 'fastmailvm.com');
 has ssh_key_id => (is => 'ro', isa => 'Str', required => 1);
 has digitalocean_ssh_key_name => (is  => 'ro', isa => 'Str', required => 1);
 
