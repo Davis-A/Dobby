@@ -77,7 +77,7 @@ sub execute ($self, $opt, $args) {
   for my $droplet (@$droplets) {
     my $name   = $droplet->{name};
     my $status = $droplet->{status};
-    my $ip     = $droplet->{networks}{v4}[0]{ip_address};
+    my $ip     = $self->boxman->_ip_address_for_droplet($droplet); # XXX _method
     my $image  = $droplet->{image};
 
     my $created  = $parser->parse_datetime($droplet->{created_at});
