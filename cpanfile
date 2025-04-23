@@ -8,16 +8,15 @@ requires "IO::Async::Loop" => "0";
 requires "IO::Async::Notifier" => "0";
 requires "JSON::MaybeXS" => "0";
 requires "Net::Async::HTTP" => "0";
-requires "experimental" => "0";
 requires "parent" => "0";
-requires "perl" => "v5.32.0";
-requires "warnings" => "0";
+requires "perl" => "v5.36.0";
 
 on 'test' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "File::Spec" => "0";
   requires "Test::More" => "0.96";
   requires "strict" => "0";
+  requires "warnings" => "0";
 };
 
 on 'test' => sub {
@@ -33,4 +32,5 @@ on 'develop' => sub {
   requires "Test::More" => "0";
   requires "Test::Pod" => "1.41";
   requires "strict" => "0";
+  requires "warnings" => "0";
 };

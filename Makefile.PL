@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use 5.032000;
+use 5.036000;
 
 use ExtUtils::MakeMaker 6.78;
 
@@ -14,7 +14,7 @@ my %WriteMakefileArgs = (
   },
   "DISTNAME" => "Dobby",
   "LICENSE" => "perl",
-  "MIN_PERL_VERSION" => "5.032000",
+  "MIN_PERL_VERSION" => "5.036000",
   "NAME" => "Dobby",
   "PREREQ_PM" => {
     "Carp" => 0,
@@ -24,15 +24,14 @@ my %WriteMakefileArgs = (
     "IO::Async::Notifier" => 0,
     "JSON::MaybeXS" => 0,
     "Net::Async::HTTP" => 0,
-    "experimental" => 0,
-    "parent" => 0,
-    "warnings" => 0
+    "parent" => 0
   },
   "TEST_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0,
     "File::Spec" => 0,
     "Test::More" => "0.96",
-    "strict" => 0
+    "strict" => 0,
+    "warnings" => 0
   },
   "VERSION" => "0.001",
   "test" => {
@@ -52,7 +51,6 @@ my %FallbackPrereqs = (
   "JSON::MaybeXS" => 0,
   "Net::Async::HTTP" => 0,
   "Test::More" => "0.96",
-  "experimental" => 0,
   "parent" => 0,
   "strict" => 0,
   "warnings" => 0
