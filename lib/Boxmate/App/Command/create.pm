@@ -25,20 +25,30 @@ sub opt_spec {
     ],
     [],
     [ 'make-default|D', 'make this your default box in DNS' ],
+    [],
+    [ 'custom-setup!', 'run per-user setup on inabox; default on inabox' ],
   );
+}
 
-  # [ 'username|u=s'    => (is => 'ro', isa => 'Str',     required => 1);
-  # [ project_id  => (is => 'ro', isa => 'Maybe[Str]');
+sub validate_args ($self, $opt, $args) {
+  unless (defined $opt->custom_setup) {
+    # Okay, this is a bit underhanded, but it's gonna work.  I know the author
+    # of the library…
+    $opt->{custom_setup} = $opt->type eq 'inabox' ? 1 : 0;
+  }
 
-  # has is_default_box   => (is => 'ro', isa => 'Bool', default => 0);
-  # has run_custom_setup => (is => 'ro', isa => 'Bool', default => 0);
-  # has setup_switches   => (is => 'ro', isa => 'Maybe[ArrayRef]');
+  if ($opt->custom_setup && $opt->type ne 'inabox') {
+    die "You can only use --custom-setup with --inabox.\n";
+  }
+
+  if (@$args && ! $opt->custom_setup) {
+    die "You provided args for custom setup, but custom setup isn't enabled.\n";
+  }
 }
 
 my %INABOX_SPEC = (
   project_id => q{d733cd68-8069-4815-ad49-e557a870ac0a},
   extra_tags => [ 'fminabox' ],
-  run_custom_setup => 1,
 );
 
 sub execute ($self, $opt, $args) {
@@ -53,8 +63,11 @@ sub execute ($self, $opt, $args) {
     region    => $opt->region // $config->region,
 
     ($opt->debian
-      ? (run_standard_setup => 0, run_custom_setup => 0, image_id => 'debian-12-x64')
+      ? (run_standard_setup => 0, image_id => 'debian-12-x64')
       : (%INABOX_SPEC)),
+
+    run_custom_setup => $opt->custom_setup,
+    setup_switches   => [ @$args ],
 
     ssh_key_id  => $config->ssh_key_id,
     digitalocean_ssh_key_name => $config->digitalocean_ssh_key_name,
