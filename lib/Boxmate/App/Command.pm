@@ -18,7 +18,7 @@ sub droplet_from_prefix ($self, $boxprefix) {
   my $username = $self->app->config->username;
   my $droplets = $boxman->get_droplets_for($username)->get;
 
-  my $want_name = $boxprefix . ".box." . $boxman->box_domain;
+  my $want_name = join q{.}, $boxprefix, $boxman->box_domain;
   my ($droplet) = grep {; $_->{name} eq $want_name } @$droplets;
 
   unless ($droplet) {
