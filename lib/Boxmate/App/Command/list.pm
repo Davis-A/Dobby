@@ -6,6 +6,8 @@ use Boxmate::App -command;
 use v5.36.0;
 use utf8;
 
+no experimental 'builtin';
+
 sub abstract { "list your boxes" }
 
 sub opt_spec {
