@@ -33,16 +33,17 @@ sub validate_args ($self, $opt, $args) {
 
 sub execute ($self, $opt, $args) {
   my $config = $self->app->config;
+  my $boxman = $self->boxman;
+
+  my $username = $opt->username // $config->username;
 
   my $droplets;
   if ($opt->everything) {
-    my @droplets = $self->boxman->dobby->get_all_droplets->get;
+    my @droplets = $boxman->dobby->get_all_droplets->get;
     @droplets = grep {; $_->{name} eq $opt->name } @droplets if $opt->name;
     $droplets = \@droplets;
   } else {
-    $droplets = $self->boxman->get_droplets_for(
-      $opt->username // $config->username
-    )->get;
+    $droplets = $boxman->get_droplets_for($username)->get;
   }
 
   if ($opt->with_tag) {
@@ -69,12 +70,21 @@ sub execute ($self, $opt, $args) {
     '', # Status
     'region',
     '  ', # Type
+    '  ', # Default
     'name',
     'ip',
     { title => 'age', align => 'right' },
     { title => 'cost', align => 'right' },
     { title => 'image age', align => 'right', align_title => 'right' },
   );
+
+  my $default;
+  unless ($opt->everything) {
+    my ($rec) = grep {; $_->{type} eq 'CNAME' && $_->{name} eq $username }
+                $boxman->dobby->get_all_domain_records_for_domain($boxman->box_domain)->get;
+
+    $default = $rec->{data};
+  }
 
   for my $droplet (@$droplets) {
     my $name   = $droplet->{name};
@@ -96,10 +106,15 @@ sub execute ($self, $opt, $args) {
              : ($image->{name} =~ /\Afminabox/               ) ? "\N{PACKAGE}"
              :                                                   "\N{BLACK QUESTION MARK ORNAMENT}";
 
+    my $default = $default && $default eq $name
+                ? "\N{SPARKLES}"
+                : "\N{IDEOGRAPHIC SPACE}";
+
     $table->add(
       ($status eq 'active' ? "\N{LARGE GREEN CIRCLE}" : "\N{HEAVY MINUS SIGN}"),
       $droplet->{region}{slug},
       "$icon\N{INVISIBLE SEPARATOR}",
+      "$default\N{INVISIBLE SEPARATOR}",
       $name,
       $ip,
       Time::Duration::concise(Time::Duration::duration($age_secs)),
