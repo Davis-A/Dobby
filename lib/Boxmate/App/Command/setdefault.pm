@@ -11,7 +11,7 @@ sub command_names { qw(setdefault set-default) }
 sub abstract { 'pick a box as your default' }
 
 sub usage_desc {
-  '%c %o [IDENT]',
+  '%c setdefault %o [IDENT]',
 }
 
 sub opt_spec {

@@ -9,7 +9,7 @@ use utf8;
 sub abstract { 'ssh to a box' }
 
 sub usage_desc {
-  '%c %o [IDENT]',
+  '%c ssh %o [IDENT]',
 }
 
 sub validate_args ($self, $opt, $args) {

@@ -9,7 +9,7 @@ use utf8;
 sub abstract { 'destroy a box' }
 
 sub usage_desc {
-  '%c %o BOXPREFIX',
+  '%c destroy %o BOXPREFIX',
 }
 
 sub validate_args ($self, $opt, $args) {
