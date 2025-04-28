@@ -37,7 +37,7 @@ my %WriteMakefileArgs = (
     "Text::Table" => 0,
     "Time::Duration" => 0,
     "experimental" => 0,
-    "lib" => 0,
+    "if" => 0,
     "parent" => 0,
     "utf8" => 0
   },
@@ -76,7 +76,7 @@ my %FallbackPrereqs = (
   "Text::Table" => 0,
   "Time::Duration" => 0,
   "experimental" => 0,
-  "lib" => 0,
+  "if" => 0,
   "parent" => 0,
   "strict" => 0,
   "utf8" => 0,
