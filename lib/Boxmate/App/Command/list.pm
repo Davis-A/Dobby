@@ -75,7 +75,7 @@ sub execute ($self, $opt, $args) {
     'ip',
     { title => 'age', align => 'right' },
     { title => 'cost', align => 'right' },
-    { title => 'image age', align => 'right', align_title => 'right' },
+    { title => 'img age', align => 'right', align_title => 'right' },
   );
 
   my $default;
