@@ -117,9 +117,9 @@ sub execute ($self, $opt, $args) {
       "$default\N{INVISIBLE SEPARATOR}",
       $name,
       $ip,
-      Time::Duration::concise(Time::Duration::duration($age_secs)),
+      Time::Duration::concise(Time::Duration::duration($age_secs, 1)),
       $cost,
-      Time::Duration::concise(Time::Duration::duration($img_age_secs)),
+      Time::Duration::concise(Time::Duration::duration($img_age_secs, 1)),
     );
   }
 
