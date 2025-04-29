@@ -1,5 +1,5 @@
-package Boxmate::App::Command::setdefault;
-use Boxmate::App -command;
+package Dobby::Boxmate::App::Command::setdefault;
+use Dobby::Boxmate::App -command;
 
 # ABSTRACT: pick a box as your default
 

@@ -1,5 +1,5 @@
-package Boxmate::App::Command::list;
-use Boxmate::App -command;
+package Dobby::Boxmate::App::Command::list;
+use Dobby::Boxmate::App -command;
 
 # ABSTRACT: list your boxes
 

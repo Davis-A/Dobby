@@ -1,5 +1,5 @@
-package Boxmate::App::Command::ssh;
-use Boxmate::App -command;
+package Dobby::Boxmate::App::Command::ssh;
+use Dobby::Boxmate::App -command;
 
 # ABSTRACT: ssh to a box
 

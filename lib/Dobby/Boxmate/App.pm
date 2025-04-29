@@ -1,7 +1,7 @@
-package Boxmate::App;
+package Dobby::Boxmate::App;
 use App::Cmd::Setup -app => {};
 
-# ABSTRACT: the App::Cmd that powers Boxmate
+# ABSTRACT: the App::Cmd that powers Dobby::Boxmate
 
 use v5.36.0;
 use utf8;
@@ -9,8 +9,8 @@ use utf8;
 sub config ($self) {
   return $self->{_config} if $self->{_config};
 
-  require Boxmate::Config;
-  $self->{_config} //= Boxmate::Config->load;
+  require Dobby::Boxmate::Config;
+  $self->{_config} //= Dobby::Boxmate::Config->load;
 }
 
 sub _loop ($self) {
@@ -21,10 +21,9 @@ sub _loop ($self) {
 sub boxman ($self) {
   return $self->{_boxman} if $self->{_boxman};
 
-  require Dobby::Client;
+  require Dobby::BoxManager;
   require IO::Async::Loop;
   require String::Flogger;
-  require Synergy::BoxManager;
 
   my $token = $ENV{DIGITALOCEAN_TOKEN};
   unless ($token) {
@@ -42,7 +41,7 @@ sub boxman ($self) {
   $self->_loop->add($dobby);
 
   my $config = $self->config;
-  $self->{_boxman} = Synergy::BoxManager->new({
+  $self->{_boxman} = Dobby::BoxManager->new({
     dobby       => $dobby,
     box_domain  => $config->box_domain,
 

@@ -1,5 +1,5 @@
-package Boxmate::App::Command::create;
-use Boxmate::App -command;
+package Dobby::Boxmate::App::Command::create;
+use Dobby::Boxmate::App -command;
 
 # ABSTRACT: create a box
 
@@ -55,7 +55,7 @@ sub execute ($self, $opt, $args) {
   my $config = $self->app->config;
   my $boxman = $self->boxman;
 
-  my $spec = Synergy::BoxManager::ProvisionRequest->new({
+  my $spec = Dobby::BoxManager::ProvisionRequest->new({
     version   => $opt->version // $config->version,
     ident     => $opt->ident,
     size      => $opt->size // $config->size,

@@ -7,16 +7,16 @@ use v5.36.0;
 # This is a bit absurd, but makes hacking on this faster.  Merging repos is a
 # contentious thing to think about later. -- rjbs, 2025-04-24
 my $RUNNING_IN_REPO;
-BEGIN { $RUNNING_IN_REPO = -e 'lib/Boxmate/App.pm' }
+BEGIN { $RUNNING_IN_REPO = -e 'lib/Dobby/Boxmate/App.pm' }
 use if $RUNNING_IN_REPO, lib => 'lib';
 use if $RUNNING_IN_REPO, lib => '../Synergy/lib';
 use if $RUNNING_IN_REPO, lib => '../Dobby/lib'; # debugging stuff
 use if $RUNNING_IN_REPO, lib => '../hm/modules'; # Yakker is here
 
-use Boxmate::App;
+use Dobby::Boxmate::App;
 
 binmode *STDOUT, 'encoding(utf-8)';
 binmode *STDERR, 'encoding(utf-8)';
 binmode *STDIN, 'encoding(utf-8)';
 
-Boxmate::App->run;
+Dobby::Boxmate::App->run;

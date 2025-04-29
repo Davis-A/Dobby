@@ -1,5 +1,5 @@
-package Boxmate::App::Command::destroy;
-use Boxmate::App -command;
+package Dobby::Boxmate::App::Command::destroy;
+use Dobby::Boxmate::App -command;
 
 # ABSTRACT: destroy a box
 

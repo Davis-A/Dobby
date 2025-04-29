@@ -1,4 +1,4 @@
-package Boxmate::App::Command;
+package Dobby::Boxmate::App::Command;
 use parent 'App::Cmd::Command';
 
 # ABSTRACT: the base class for box commands
