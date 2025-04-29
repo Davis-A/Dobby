@@ -13,18 +13,36 @@ my %WriteMakefileArgs = (
     "ExtUtils::MakeMaker" => "6.78"
   },
   "DISTNAME" => "Dobby",
+  "EXE_FILES" => [
+    "bin/box"
+  ],
   "LICENSE" => "perl",
   "MIN_PERL_VERSION" => "5.036000",
   "NAME" => "Dobby",
   "PREREQ_PM" => {
+    "App::Cmd::Command" => 0,
+    "App::Cmd::Setup" => 0,
     "Carp" => 0,
+    "DateTime::Format::RFC3339" => 0,
+    "Defined::KV" => 0,
     "Future::AsyncAwait" => 0,
     "Future::Utils" => 0,
     "IO::Async::Loop" => 0,
     "IO::Async::Notifier" => 0,
     "JSON::MaybeXS" => 0,
+    "Moose" => 0,
     "Net::Async::HTTP" => 0,
-    "parent" => 0
+    "Path::Tiny" => 0,
+    "Process::Status" => 0,
+    "String::Flogger" => 0,
+    "TOML::Parser" => 0,
+    "Term::ANSIColor" => 0,
+    "Text::Table" => 0,
+    "Time::Duration" => 0,
+    "experimental" => 0,
+    "if" => 0,
+    "parent" => 0,
+    "utf8" => 0
   },
   "TEST_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0,
@@ -41,7 +59,11 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "App::Cmd::Command" => 0,
+  "App::Cmd::Setup" => 0,
   "Carp" => 0,
+  "DateTime::Format::RFC3339" => 0,
+  "Defined::KV" => 0,
   "ExtUtils::MakeMaker" => 0,
   "File::Spec" => 0,
   "Future::AsyncAwait" => 0,
@@ -49,10 +71,21 @@ my %FallbackPrereqs = (
   "IO::Async::Loop" => 0,
   "IO::Async::Notifier" => 0,
   "JSON::MaybeXS" => 0,
+  "Moose" => 0,
   "Net::Async::HTTP" => 0,
+  "Path::Tiny" => 0,
+  "Process::Status" => 0,
+  "String::Flogger" => 0,
+  "TOML::Parser" => 0,
+  "Term::ANSIColor" => 0,
   "Test::More" => "0.96",
+  "Text::Table" => 0,
+  "Time::Duration" => 0,
+  "experimental" => 0,
+  "if" => 0,
   "parent" => 0,
   "strict" => 0,
+  "utf8" => 0,
   "warnings" => 0
 );
 
