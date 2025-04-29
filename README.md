@@ -1,3 +1,8 @@
+# Dobby: a DigitalOcean client
+
+It's a half-baked client for the DigitalOcean API, made to do only and exactly
+what we need for box management.  More interesting is Boxmate:
+
 # Boxmate: your FM VM BFF
 
 Boxmate, or `box` to his friends, is a little command for managing Fastmail
