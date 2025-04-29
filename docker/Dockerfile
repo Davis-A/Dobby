@@ -92,12 +92,3 @@ perl Makefile.PL
 make
 make install
 EOF
-
-RUN <<EOF
-# install Boxmate
-git clone https://github.com/Fastmail/Boxmate.git
-cd Boxmate
-perl Makefile.PL
-make
-make install
-EOF
