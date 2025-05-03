@@ -51,6 +51,10 @@ sub execute ($self, $opt, $args) {
 
   my $droplet = $boxman->_get_droplet_for($username, $ident)->get;
 
+  unless ($droplet) {
+    die "No droplet for $ident.$username exists.\n";
+  }
+
   my $ssh_user = $opt->ssh_user;
 
   my $ip = $boxman->_ip_address_for_droplet($droplet);
