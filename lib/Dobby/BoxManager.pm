@@ -64,7 +64,7 @@ package Dobby::BoxManager::ProvisionRequest {
 
   has image_id    => (is => 'ro', isa => 'Str',     required => 0);
 
-  has ident       => (is => 'ro', isa => 'Str',     required => 1);
+  has label       => (is => 'ro', isa => 'Str',     required => 1);
 
   has extra_tags  => (is => 'ro', isa => 'ArrayRef[Str]', default => sub { [] });
   has project_id  => (is => 'ro', isa => 'Maybe[Str]');
@@ -83,7 +83,7 @@ package Dobby::BoxManager::ProvisionRequest {
 }
 
 async sub create_droplet ($self, $spec) {
-  my $maybe_droplet = await $self->_get_droplet_for($spec->username, $spec->ident);
+  my $maybe_droplet = await $self->_get_droplet_for($spec->username, $spec->label);
 
   if ($maybe_droplet) {
     $self->handle_error(
@@ -91,7 +91,7 @@ async sub create_droplet ($self, $spec) {
     );
   }
 
-  my $name = $self->box_name_for($spec->username, $spec->ident);
+  my $name = $self->box_name_for($spec->username, $spec->label);
 
   my $region = $spec->region;
   $self->handle_message("Creating $name in $region, this will take a minute or two.");
@@ -130,7 +130,7 @@ async sub create_droplet ($self, $spec) {
   # lightning-fast anyway. -- michael, 2021-04-16
   await $self->dobby->loop->delay_future(after => $self->post_creation_delay);
 
-  $droplet = await $self->_get_droplet_for($spec->username, $spec->ident);
+  $droplet = await $self->_get_droplet_for($spec->username, $spec->label);
 
   if ($droplet) {
     $self->handle_log([ "created droplet %s (%s)", $droplet->{id}, $droplet->{name} ]);
@@ -157,7 +157,7 @@ async sub create_droplet ($self, $spec) {
 
     my $ip_addr = $self->_ip_address_for_droplet($droplet);
 
-    my $name = $self->_dns_name_for($spec->username, $spec->ident);
+    my $name = $self->_dns_name_for($spec->username, $spec->label);
     $self->handle_log("setting up A records for $name.$box_domain");
 
     await $self->dobby->point_domain_record_at_ip($box_domain, $name, $ip_addr);
@@ -348,14 +348,14 @@ async sub _setup_droplet ($self, $spec, $droplet, $key_file) {
 
 async sub find_and_destroy_droplet ($self, $arg) {
   my $username = $arg->{username};
-  my $ident    = $arg->{ident};
+  my $label    = $arg->{label};
   my $force    = $arg->{force};
 
-  my $droplet = await $self->_get_droplet_for($username, $ident);
+  my $droplet = await $self->_get_droplet_for($username, $label);
 
   unless ($droplet) {
     $self->handle_error(
-      "That box doesn't exist: " . $self->box_name_for($username, $ident)
+      "That box doesn't exist: " . $self->box_name_for($username, $label)
     );
   }
 
@@ -394,7 +394,7 @@ async sub destroy_droplet ($self, $droplet, $arg) {
   return;
 }
 
-async sub take_droplet_action ($self, $username, $ident, $action) {
+async sub take_droplet_action ($self, $username, $label, $action) {
   my $gerund = $action eq 'on'       ? 'powering on'
              : $action eq 'off'      ? 'powering off'
              : $action eq 'shutdown' ? 'shutting down'
@@ -402,7 +402,7 @@ async sub take_droplet_action ($self, $username, $ident, $action) {
 
   my $past_tense = $action eq 'shutdown' ? 'shut down' : "powered $action";
 
-  my $droplet = await $self->_get_droplet_for($username, $ident);
+  my $droplet = await $self->_get_droplet_for($username, $label);
 
   unless ($droplet) {
     $self->handle_error("I can't find a box to do that to!");
@@ -459,23 +459,23 @@ async sub _get_ssh_key ($self, $spec) {
   $self->handle_error("Hmm, I couldn't find a DO ssh key to use for fminabox!");
 }
 
-sub _dns_name_for ($self, $username, $ident) {
+sub _dns_name_for ($self, $username, $label) {
   length $username
     || Carp::confess("username was undef or empty in call to _dns_name_for");
 
-  length $ident
-    || Carp::confess("ident was undef or empty in call to _dns_name_for");
+  length $label
+    || Carp::confess("label was undef or empty in call to _dns_name_for");
 
-  return join '.', $ident, $username;
+  return join '.', $label, $username;
 }
 
-sub box_name_for ($self, $username, $ident = undef) {
-  my $stub = length $ident ? $self->_dns_name_for($username, $ident) : $username;
+sub box_name_for ($self, $username, $label = undef) {
+  my $stub = length $label ? $self->_dns_name_for($username, $label) : $username;
   return join '.', $stub, $self->box_domain;
 }
 
-async sub _get_droplet_for ($self, $username, $ident) {
-  my $name = $self->box_name_for($username, $ident);
+async sub _get_droplet_for ($self, $username, $label) {
+  my $name = $self->box_name_for($username, $label);
 
   my $droplets = await $self->get_droplets_for($username);
 

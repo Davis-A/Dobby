@@ -13,7 +13,7 @@ sub opt_spec {
     [ 'region=s',     'what region to create the box in' ],
     [ 'size|s=s',     'DigitalOcean slug for the Droplet size' ],
     [ 'version|v=s',  'image version to use' ],
-    [ 'ident|i=s',    'box ident (the part before username)', { required => 1 } ],
+    [ 'label|l=s',    'box label (the part before username)', { required => 1 } ],
     [],
     [ 'type' => 'hidden' => {
         default => 'inabox',
@@ -57,7 +57,7 @@ sub execute ($self, $opt, $args) {
 
   my $spec = Dobby::BoxManager::ProvisionRequest->new({
     version   => $opt->version // $config->version,
-    ident     => $opt->ident,
+    label     => $opt->label,
     size      => $opt->size // $config->size,
     username  => $config->username,
     region    => $opt->region // $config->region,

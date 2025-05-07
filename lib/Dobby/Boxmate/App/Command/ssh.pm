@@ -30,9 +30,9 @@ sub execute ($self, $opt, $args) {
   my $username = $opt->username // $config->username;
   my $domain   = $config->box_domain;
 
-  my $ident = $args->[0];
+  my $label = $args->[0];
 
-  unless ($ident) {
+  unless ($label) {
     my @records = $boxman->dobby->get_all_domain_records_for_domain($domain)->get;
     my ($cname) = grep {; $_->{type} eq 'CNAME' && $_->{name} eq $username }
                   @records;
@@ -42,17 +42,17 @@ sub execute ($self, $opt, $args) {
     }
 
     my $name = $cname->{data};
-    ($ident) = $name =~ /\A([-_a-z0-9]+)\.\Q$username\E\.\Q$domain\E\z/;
+    ($label) = $name =~ /\A([-_a-z0-9]+)\.\Q$username\E\.\Q$domain\E\z/;
 
-    unless ($ident) {
+    unless ($label) {
       die "The default box record for $username points to $name, which is not in the expected format.  Giving up.\n";
     }
   }
 
-  my $droplet = $boxman->_get_droplet_for($username, $ident)->get;
+  my $droplet = $boxman->_get_droplet_for($username, $label)->get;
 
   unless ($droplet) {
-    die "No droplet for $ident.$username exists.\n";
+    die "No droplet for $label.$username exists.\n";
   }
 
   my $ssh_user = $opt->ssh_user;

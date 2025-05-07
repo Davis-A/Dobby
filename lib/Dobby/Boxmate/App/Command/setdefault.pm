@@ -22,7 +22,7 @@ sub opt_spec {
 
 sub validate_args ($self, $opt, $args) {
   if ($opt->clear && @$args) {
-    die "You can't supply a box ident with --clear.\n";
+    die "You can't supply a box label with --clear.\n";
   }
 
   if (!$opt->clear && !@$args) {
@@ -61,15 +61,15 @@ sub _clear_default_box ($self) {
   return;
 }
 
-sub _set_default_box_to ($self, $ident) {
+sub _set_default_box_to ($self, $label) {
   my $config = $self->app->config;
   my $boxman = $self->boxman;
 
   my $username = $config->username;
   my $domain   = $config->box_domain;
 
-  my $droplet = $boxman->_get_droplet_for($username, $ident)->get;
-  my $name    = "$ident.$username.$domain";
+  my $droplet = $boxman->_get_droplet_for($username, $label)->get;
+  my $name    = "$label.$username.$domain";
 
   unless ($droplet) {
     die "Can't find a box named $name.\n";
