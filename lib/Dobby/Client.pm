@@ -50,7 +50,9 @@ sub http ($self) {
   };
 }
 
-async sub json_get ($self, $path) {
+async sub json_get ($self, $path, $arg=undef) {
+  my $undef_if_404 = $arg && $arg->{undef_if_404};
+
   my $res = await $self->http->do_request(
     method => 'GET',
     uri    => $self->api_base . $path,
@@ -60,6 +62,10 @@ async sub json_get ($self, $path) {
   );
 
   unless ($res->is_success) {
+    if ($undef_if_404 && $res->code == 404) {
+      return undef;
+    }
+
     die "error getting $path at DigitalOcean: " . $res->as_string;
   }
 
