@@ -253,6 +253,7 @@ async sub _do_action_status_f ($self, $action_url) {
 async sub _get_droplets ($self, $arg = {}) {
   my $path = '/droplets?per_page=200';
   $path .= "&tag_name=$arg->{tag}" if $arg->{tag};
+  $path .= "&name=$arg->{name}" if $arg->{name};
 
   my $droplets_data = await $self->json_get($path);
 
@@ -276,6 +277,25 @@ async sub get_all_droplets ($self) {
 
 async sub get_droplets_with_tag ($self, $tag) {
   await $self->_get_droplets({ tag => $tag });
+}
+
+async sub get_droplet_by_id ($self, $id) {
+  $id =~ /\A[0-9]+\z/
+    || Carp::croak("bogus id given to get_droplet_by_id; should be a string of digits");
+
+  my $path = "/droplets/$id";
+
+  my $droplet = await $self->json_get($path, { undef_if_404 => 1 });
+
+  return $droplet;
+}
+
+async sub get_droplets_by_name ($self, $name) {
+  length $name
+    || Carp::croak("get_droplet_by_name without a name passed in");
+
+  my @droplets = await $self->_get_droplets({ name => $name });
+  return @droplets;
 }
 
 async sub add_droplet_to_project ($self, $droplet_id, $project_id) {
