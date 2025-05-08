@@ -9,7 +9,7 @@ sub boxman ($self) {
   $self->app->boxman;
 }
 
-sub droplet_from_prefix ($self, $boxprefix) {
+sub maybe_droplet_from_prefix ($self, $boxprefix) {
   length $boxprefix
     || $self->usage->die({ pre_text => "No box prefix provided.\n\n" });
 
@@ -20,6 +20,12 @@ sub droplet_from_prefix ($self, $boxprefix) {
 
   my $want_name = join q{.}, $boxprefix, $username, $boxman->box_domain;
   my ($droplet) = grep {; $_->{name} eq $want_name } @$droplets;
+
+  return $droplet;
+}
+
+sub droplet_from_prefix ($self, $boxprefix) {
+  my $droplet = $self->maybe_droplet_from_prefix($boxprefix);
 
   unless ($droplet) {
     die "Couldn't find box for $boxprefix\n";
