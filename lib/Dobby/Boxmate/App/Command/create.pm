@@ -20,6 +20,7 @@ sub opt_spec {
         one_of  => [
           [ 'inabox',       "create a Fastmail-in-a-box (default behavior)" ],
           [ 'debian',       "don't make a Fastmail-in-a-box, just Debian" ],
+          [ 'docker',       "don't make a Fastmail-in-a-box, just Docker" ],
         ]
       }
     ],
@@ -62,9 +63,9 @@ sub execute ($self, $opt, $args) {
     username  => $config->username,
     region    => $opt->region // $config->region,
 
-    ($opt->debian
-      ? (run_standard_setup => 0, image_id => 'debian-12-x64')
-      : (%INABOX_SPEC)),
+    ($opt->debian ? (run_standard_setup => 0, image_id => 'debian-12-x64')
+    :$opt->docker ? (run_standard_setup => 0, image_id => 'docker-20-04')
+    :               (%INABOX_SPEC)),
 
     run_custom_setup => $opt->custom_setup,
     setup_switches   => [ @$args ],
