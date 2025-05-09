@@ -60,12 +60,12 @@ sub execute ($self, $opt, $args) {
 }
 
 sub _find_by_prefix ($self, $opt, $locator) {
-  return $self->maybe_droplet_from_prefix($locator);
+  return grep {; defined } $self->maybe_droplet_from_prefix($locator);
 }
 
 sub _find_by_id ($self, $opt, $locator) {
   $opt->ip || die "You can't destroy a box by id without --ip for safety.\n";
-  return $self->boxman->dobby->get_droplet_by_id($locator)->get;
+  return grep {; defined } $self->boxman->dobby->get_droplet_by_id($locator)->get;
 }
 
 sub _find_by_name ($self, $opt, $locator) {
