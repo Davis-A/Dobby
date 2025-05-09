@@ -8,6 +8,21 @@ use utf8;
 
 sub abstract { 'destroy a box' }
 
+sub opt_spec {
+  return (
+    [ finder => hidden => {
+      default  => 'by_prefix',
+      one_of   => [
+        [ 'by-prefix' => 'find box by prefix of default domain' ],
+        [ 'by-id|I'   => 'find box by Droplet id' ],
+        [ 'by-name|N' => 'find box by Droplet name' ],
+      ],
+    } ],
+    [],
+    [ 'ip=s', 'only destroy if the public IP is this' ],
+  );
+}
+
 sub usage_desc {
   '%c destroy %o BOXPREFIX',
 }
@@ -18,9 +33,44 @@ sub validate_args ($self, $opt, $args) {
 
 sub execute ($self, $opt, $args) {
   my $boxman  = $self->boxman;
-  my $droplet = $self->droplet_from_prefix($args->[0]);
+  my $locator = $args->[0];
 
-  $boxman->destroy_droplet($droplet, { force => 1 })->get;
+  my $method = "_find_" . $opt->finder;
+
+  my @droplets = $self->$method($opt, $locator);
+
+  if ($opt->ip) {
+    @droplets = grep {
+      $opt->ip eq $self->boxman->_ip_address_for_droplet($_) # XXX _method
+    } @droplets;
+  }
+
+  unless (@droplets) {
+    die "I couldn't find the box you want to destroy.\n";
+  }
+
+  if (@droplets > 1) {
+    $self->print_droplet_list(\@droplets, undef);
+    say "";
+
+    die "More than one box matched your criteria.\n";
+  }
+
+  $boxman->destroy_droplet($droplets[0], { force => 1 })->get;
+}
+
+sub _find_by_prefix ($self, $opt, $locator) {
+  return $self->maybe_droplet_from_prefix($locator);
+}
+
+sub _find_by_id ($self, $opt, $locator) {
+  $opt->ip || die "You can't destroy a box by id without --ip for safety.\n";
+  return $self->boxman->dobby->get_droplet_by_id($locator)->get;
+}
+
+sub _find_by_name ($self, $opt, $locator) {
+  my @droplets = $self->boxman->dobby->get_droplets_by_name($locator)->get;
+  return @droplets;
 }
 
 1;
