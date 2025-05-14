@@ -8,12 +8,13 @@ use utf8;
 
 sub abstract { 'create a box' }
 
+sub usage_desc { '%c create %o LABEL' }
+
 sub opt_spec {
   return (
     [ 'region=s',     'what region to create the box in' ],
     [ 'size|s=s',     'DigitalOcean slug for the Droplet size' ],
     [ 'version|v=s',  'image version to use' ],
-    [ 'label|l=s',    'box label (the part before username)', { required => 1 } ],
     [],
     [ 'type' => 'hidden' => {
         default => 'inabox',
@@ -27,11 +28,18 @@ sub opt_spec {
     [],
     [ 'make-default|D', 'make this your default box in DNS' ],
     [],
-    [ 'custom-setup!', 'run per-user setup on inabox; default on inabox' ],
+    [ 'custom-setup!',  'run per-user setup on inabox; default on inabox' ],
+    [ 'setup-args|S=s', 'arguments to custom setup, as a single string' ],
   );
 }
 
 sub validate_args ($self, $opt, $args) {
+  @$args == 1
+    || $self->usage->die({ pre_text => "No box label provided.\n\n" });
+
+  $args->[0] =~ /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
+    || die "The label needs to be a string of [a-z0-9]+ joined by dashes.\n";
+
   unless (defined $opt->custom_setup) {
     # Okay, this is a bit underhanded, but it's gonna work.  I know the author
     # of the library…
@@ -42,7 +50,7 @@ sub validate_args ($self, $opt, $args) {
     die "You can only use --custom-setup with --inabox.\n";
   }
 
-  if (@$args && ! $opt->custom_setup) {
+  if (length $opt->setup_args && ! $opt->custom_setup) {
     die "You provided args for custom setup, but custom setup isn't enabled.\n";
   }
 }
@@ -56,9 +64,13 @@ sub execute ($self, $opt, $args) {
   my $config = $self->app->config;
   my $boxman = $self->boxman;
 
+  my $label = $args->[0];
+
+  my @setup_args = split /\s+/, ($opt->setup_args // q{});
+
   my $spec = Dobby::BoxManager::ProvisionRequest->new({
     version   => $opt->version // $config->version,
-    label     => $opt->label,
+    label     => $label,
     size      => $opt->size // $config->size,
     username  => $config->username,
     region    => $opt->region // $config->region,
@@ -68,7 +80,7 @@ sub execute ($self, $opt, $args) {
     :               (%INABOX_SPEC)),
 
     run_custom_setup => $opt->custom_setup,
-    setup_switches   => [ @$args ],
+    setup_switches   => [ @setup_args ],
 
     ssh_key_id  => $config->ssh_key_id,
     digitalocean_ssh_key_name => $config->digitalocean_ssh_key_name,
