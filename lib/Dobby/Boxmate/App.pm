@@ -53,7 +53,7 @@ sub boxman ($self) {
       say "━━━┫ begin setup output ┣━━━━━━━━━";
       say $output;
       say "━━━┫ end setup output ┣━━━━━━━━━━━";
-      return undef;
+      return Future->done;
     },
   });
 }
