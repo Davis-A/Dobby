@@ -79,10 +79,11 @@ sub print_droplet_list ($self, $droplets, $username = undef) {
     my $cost = sprintf '%4s',
       '$' .  builtin::ceil($droplet->{size}{price_hourly} * $age_secs / 3600);
 
-    my $icon = ($image->{slug} && $image->{slug} =~ /^debian/) ? "\N{CYCLONE}"
-             : (($image->{description}//'') =~ /^Debian/)      ? "\N{CYCLONE}" # Deb 11
-             : ($image->{name} =~ /\Afminabox/               ) ? "\N{PACKAGE}"
-             :                                                   "\N{BLACK QUESTION MARK ORNAMENT}";
+    my $icon = ($image->{slug} && $image->{slug} =~ /^debian/)  ? "\N{CYCLONE}"
+             : (($image->{description}//'') =~ /^Debian/)       ? "\N{CYCLONE}" # Deb 11
+             : ($image->{slug} && $image->{slug} =~ /^docker-/) ? "\N{SHIP}"
+             : ($image->{name} =~ /\Afminabox/)                 ? "\N{PACKAGE}"
+             :                                                    "\N{BLACK QUESTION MARK ORNAMENT}";
 
     my $default = $default && $default eq $name
                 ? "\N{SPARKLES}"
