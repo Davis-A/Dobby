@@ -71,7 +71,6 @@ sub execute ($self, $opt, $args) {
       "root\@$ip",
       <<~'END',
         if [ -e /home/mod_perl/hm/ME/App/FMDev/Command/mollyguard.pm ]; then
-          cd /home/mod_perl/hm;
           fmdev mollyguard;
         else
           true
