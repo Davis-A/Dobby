@@ -19,7 +19,8 @@ sub opt_spec {
       ],
     } ],
     [],
-    [ 'ip=s', 'only destroy if the public IP is this' ],
+    [ 'ip=s',  'only destroy if the public IP is this' ],
+    [ 'force', 'destroy without consulting the mollyguard' ],
   );
 }
 
@@ -56,7 +57,37 @@ sub execute ($self, $opt, $args) {
     die "More than one box matched your criteria.\n";
   }
 
-  $boxman->destroy_droplet($droplets[0], { force => 1 })->get;
+  my $droplet = $droplets[0];
+
+  unless ($opt->force) {
+    my $ip = $boxman->_ip_address_for_droplet($droplet);
+    my @cmd = (
+      qw(
+        ssh
+          -o UserKnownHostsFile=/dev/null
+          -o StrictHostKeyChecking=no
+          -o SendEnv=FM_*
+      ),
+      "root\@$ip",
+      <<~'END',
+        if [ -e /home/mod_perl/hm/ME/App/FMDev/Command/mollyguard.pm ]; then
+          cd /home/mod_perl/hm;
+          fmdev mollyguard;
+        else
+          true
+        fi
+      END
+    );
+
+    system(@cmd);
+
+    if ($?) {
+      die qq{Refusing to destroy box because "fmdev mollyguard" objected.\n}
+        . qq{You can use --force to bypass this, or fix mollyguard's complaints.\n};
+    }
+  }
+
+  $boxman->destroy_droplet($droplet, { force => 1 })->get;
 }
 
 sub _find_by_prefix ($self, $opt, $locator) {
