@@ -13,7 +13,7 @@ sub usage_desc {
 }
 
 sub validate_args ($self, $opt, $args) {
-  @$args <= 1 || $self->usage->die;
+  @$args >= 1 || $self->usage->die;
 }
 
 sub opt_spec {
@@ -30,9 +30,12 @@ sub execute ($self, $opt, $args) {
   my $username = $opt->username // $config->username;
   my $domain   = $config->box_domain;
 
-  my $label = $args->[0];
+  my $label;
+  my @ssh_args;
 
-  unless ($label) {
+  if (@$args) {
+    ($label, @ssh_args) = @$args;
+  } else {
     my @records = $boxman->dobby->get_all_domain_records_for_domain($domain)->get;
     my ($cname) = grep {; $_->{type} eq 'CNAME' && $_->{name} eq $username }
                   @records;
@@ -66,6 +69,7 @@ sub execute ($self, $opt, $args) {
         -o SendEnv=FM_*
     ),
     "$ssh_user\@$ip",
+    @ssh_args,
   );
 
   exec @cmd;
