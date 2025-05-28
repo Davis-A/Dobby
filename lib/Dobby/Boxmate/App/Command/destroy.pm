@@ -60,27 +60,9 @@ sub execute ($self, $opt, $args) {
   my $droplet = $droplets[0];
 
   unless ($opt->force) {
-    my $ip = $boxman->_ip_address_for_droplet($droplet);
-    my @cmd = (
-      qw(
-        ssh
-          -o UserKnownHostsFile=/dev/null
-          -o StrictHostKeyChecking=no
-          -o SendEnv=FM_*
-      ),
-      "root\@$ip",
-      <<~'END',
-        if [ -e /home/mod_perl/hm/ME/App/FMDev/Command/mollyguard.pm ]; then
-          fmdev mollyguard;
-        else
-          true
-        fi
-      END
-    );
+    my $ok = $boxman->check_mollyguard($droplet)->get;
 
-    system(@cmd);
-
-    if ($?) {
+    unless ($ok) {
       die qq{Refusing to destroy box because "fmdev mollyguard" objected.\n}
         . qq{You can use --force to bypass this, or fix mollyguard's complaints.\n};
     }

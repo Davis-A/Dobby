@@ -443,6 +443,29 @@ async sub take_droplet_action ($self, $username, $label, $action) {
   return;
 }
 
+async sub check_mollyguard ($self, $droplet) {
+  my $ip  = $self->_ip_address_for_droplet($droplet);
+  my @cmd = (
+    qw(
+      ssh
+        -o UserKnownHostsFile=/dev/null
+        -o StrictHostKeyChecking=no
+        -o SendEnv=FM_*
+    ),
+    "root\@$ip",
+    <<~'END',
+      if [ -e /home/mod_perl/hm/ME/App/FMDev/Command/mollyguard.pm ]; then
+        fmdev mollyguard;
+      else
+        true
+      fi
+    END
+  );
+
+  system(@cmd);
+  return !$?;
+}
+
 async sub _get_ssh_key ($self, $spec) {
   my $dobby = $self->dobby;
   my $keys = await $dobby->json_get_pages_of("/account/keys", 'ssh_keys');
