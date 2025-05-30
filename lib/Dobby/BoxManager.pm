@@ -94,7 +94,7 @@ async sub create_droplet ($self, $spec) {
   my $name = $self->box_name_for($spec->username, $spec->label);
 
   my $region = $spec->region;
-  $self->handle_message("Creating $name in $region, this will take a minute or two.");
+  $self->handle_message("Creating $name in \U$region\E, this will take a minute or two.");
 
   # It would be nice to do these in parallel, but in testing that causes
   # *super* strange errors deep down in IO::Async if one of the calls fails and
