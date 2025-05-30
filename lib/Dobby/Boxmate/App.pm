@@ -45,7 +45,7 @@ sub boxman ($self) {
     dobby       => $dobby,
     box_domain  => $config->box_domain,
 
-    error_cb    => sub ($err) { die "❌ $err" },
+    error_cb    => sub ($err) { die "❌ $err\n" },
     log_cb      => sub ($log) { say "🔸 " . String::Flogger->flog($log) },
     message_cb  => sub ($msg) { say "🔹 $msg" },
     snippet_cb  => sub ($arg) {
