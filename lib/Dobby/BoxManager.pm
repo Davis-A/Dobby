@@ -205,7 +205,8 @@ async sub _get_snapshot_id ($self, $spec) {
   my %snapshot_regions = map {; $_ => 1 } $snapshot->{regions}->@*;
 
   unless ($snapshot_regions{$region}) {
-    $self->handle_error("I'm unable to create an fminabox in the region '$region'.");
+    my $region_list = join q{, }, map {; uc } sort $snapshot->{regions}->@*;
+    $self->handle_error("The snapshot you want ($snapshot->{name}) isn't available in \U$region\E.  You could create it in any of these regions: $region_list");
   }
 
   return $snapshot->{id};
