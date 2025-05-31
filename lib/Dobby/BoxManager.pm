@@ -444,9 +444,10 @@ async sub take_droplet_action ($self, $username, $label, $action) {
   return;
 }
 
-async sub check_mollyguard ($self, $droplet) {
+async sub mollyguard_status_for ($self, $droplet) {
   my $ip  = $self->_ip_address_for_droplet($droplet);
-  my @cmd = (
+
+  my @ssh_command = (
     qw(
       ssh
         -o UserKnownHostsFile=/dev/null
@@ -463,8 +464,22 @@ async sub check_mollyguard ($self, $droplet) {
     END
   );
 
-  system(@cmd);
-  return !$?;
+  my ($exitcode, $stdout, $stderr) = await $self->dobby->loop->run_process(
+    capture => [ qw( exitcode stdout stderr ) ],
+    command => [ @ssh_command ],
+  );
+
+  return { ok => 1 } if $exitcode == 0;
+
+  my $content = $stderr;
+  $content .= "\n\n----(stdout)----\n$stdout" if length $stdout;
+
+  $content = Encode::decode('utf-8', $content);
+
+  return {
+    ok     => 0,
+    report => $content,
+  };
 }
 
 async sub _get_ssh_key ($self, $spec) {

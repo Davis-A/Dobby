@@ -60,11 +60,13 @@ sub execute ($self, $opt, $args) {
   my $droplet = $droplets[0];
 
   unless ($opt->force) {
-    my $ok = $boxman->check_mollyguard($droplet)->get;
+    my $status = $boxman->mollyguard_status_for($droplet)->get;
 
-    unless ($ok) {
+    unless ($status->{ok}) {
       die qq{Refusing to destroy box because "fmdev mollyguard" objected.\n}
-        . qq{You can use --force to bypass this, or fix mollyguard's complaints.\n};
+        . qq{You can use --force to bypass this, or fix mollyguard's complaints.\n}
+        . qq{\n}
+        . "$status->{report}\n";
     }
   }
 
