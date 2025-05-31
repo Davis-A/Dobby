@@ -50,9 +50,10 @@ sub boxman ($self) {
     message_cb  => sub ($msg) { say "🔹 $msg" },
     snippet_cb  => sub ($arg) {
       my $output = $arg->{content};
-      say "━━━┫ begin setup output ┣━━━━━━━━━";
+      my $title  = $arg->{title} // "output";
+      say "━━━┫ begin $title ┣━━━━━━━━━";
       say $output;
-      say "━━━┫ end setup output ┣━━━━━━━━━━━";
+      say "━━━┫ end ┣━━━━━━━━━━━";
       return Future->done;
     },
   });
