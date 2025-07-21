@@ -73,7 +73,7 @@ sub execute ($self, $opt, $args) {
     label     => $label,
     size      => $opt->size // $config->size,
     username  => $config->username,
-    region    => $opt->region // $config->region,
+    region    => lc($opt->region // $config->region),
 
     ($opt->debian ? (run_standard_setup => 0, image_id => 'debian-12-x64')
     :$opt->docker ? (run_standard_setup => 0, image_id => 'docker-20-04')
